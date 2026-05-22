@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
+from .forms import NoteForm
+from .models import CategorieEvaluation, Note
 
 from accounts.models import Profile
 from .models import CatalogueModule, Inscription, ModuleChoisi
@@ -124,3 +126,53 @@ def remove_module_view(request, module_choisi_id):
 
     messages.success(request, "Module retiré du panier.")
     return redirect("basket")
+
+
+
+@login_required
+def manage_notes_view(request, module_choisi_id):
+    if request.user.profile.role != Profile.ROLE_STUDENT:
+        messages.error(request, "Accès réservé aux étudiants.")
+        return redirect("home")
+
+    module_choisi = get_object_or_404(
+        ModuleChoisi,
+        id=module_choisi_id,
+        inscription__etudiant=request.user
+    )
+
+    inscription = module_choisi.inscription
+
+    if inscription.statut != Inscription.STATUT_VERROUILLEE:
+        messages.error(
+            request,
+            "Les notes ne peuvent être saisies qu’après verrouillage de l’inscription."
+        )
+        return redirect("student_dashboard")
+
+    categories = module_choisi.module.categories.all()
+
+    if request.method == "POST":
+        for categorie in categories:
+            valeur = request.POST.get(f"categorie_{categorie.id}")
+
+            if valeur:
+                Note.objects.update_or_create(
+                    module_choisi=module_choisi,
+                    categorie=categorie,
+                    defaults={"valeur": valeur}
+                )
+
+        messages.success(request, "Notes enregistrées avec succès.")
+        return redirect("student_dashboard")
+
+    existing_notes = {
+        note.categorie_id: note
+        for note in module_choisi.notes.all()
+    }
+
+    return render(request, "academics/manage_notes.html", {
+        "module_choisi": module_choisi,
+        "categories": categories,
+        "existing_notes": existing_notes,
+    })
