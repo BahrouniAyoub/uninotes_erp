@@ -4,18 +4,13 @@
   <div class="page-header">
     <p class="eyebrow">Espace étudiant</p>
     <h1>Dashboard étudiant</h1>
-    <p>
-      Consultez vos modules choisis, vos catégories d’évaluation,
-      vos notes et vos moyennes.
-    </p>
+    <p>Consultez vos modules choisis, vos catégories d’évaluation, vos notes et vos moyennes.</p>
   </div>
 
   <section class="basket-status card">
     <div class="section-title">
       <h2>Résumé de l’inscription</h2>
-      <span class="status-badge">
-        {{ inscription.get_statut_display }}
-      </span>
+      <span class="status-badge">{{ inscription.get_statut_display }}</span>
     </div>
 
     <div class="stats-grid">
@@ -49,12 +44,8 @@
 
     {% if inscription.statut != 'verrouillee' %}
       <div class="locked-message">
-        Votre inscription n’est pas encore verrouillée.
-
-        <div style="margin-top: 1rem;">
-          <a class="btn btn-primary" href="{% url 'basket' %}">
-            Retour au panier
-          </a>
+        Votre inscription n’est pas encore verrouillée.<div style="margin-top: 1rem;">
+          <a class="btn btn-primary" href="{% url 'basket' %}">Retour au panier</a>
         </div>
       </div>
     {% endif %}
@@ -64,22 +55,16 @@
     <div class="section-title">
       <h2>Mes modules</h2>
 
-      <a class="btn btn-primary" href="{% url 'basket' %}">
-        Voir le panier
-      </a>
+      <a class="btn btn-primary" href="{% url 'basket' %}">Voir le panier</a>
+      <a class="btn btn-light" href="{% url 'evolution' %}">Voir l’évolution</a>
     </div>
 
     {% if modules_data %}
       <div class="module-list">
-
         {% for data in modules_data %}
           {% with choix=data.choix %}
-
             <article class="card feature-card">
-
-              <span class="feature-icon">
-                {{ choix.module.coefficient }}
-              </span>
+              <span class="feature-icon">{{ choix.module.coefficient }}</span>
 
               <h3>{{ choix.module.intitule }}</h3>
 
@@ -107,68 +92,40 @@
                   <li>
                     <span>{{ categorie.nom }}</span>
 
-                    <strong>
-                      {{ categorie.poids }}%
-                    </strong>
+                    <strong>{{ categorie.poids }}%</strong>
                   </li>
                 {% endfor %}
               </ul>
 
-              <h4 style="margin-top: 1.2rem;">
-                Notes enregistrées
-              </h4>
+              <h4 style="margin-top: 1.2rem;">Notes enregistrées</h4>
 
               {% if choix.notes.all %}
                 <ul class="suggestion-list">
-
                   {% for note in choix.notes.all %}
                     <li>
-                      <span>
-                        {{ note.categorie.nom }}
-                      </span>
+                      <span>{{ note.categorie.nom }}</span>
 
-                      <strong>
-                        {{ note.valeur }}/20
-                      </strong>
+                      <strong>{{ note.valeur }}/20</strong>
                     </li>
                   {% endfor %}
-
                 </ul>
               {% else %}
-                <p class="empty-state">
-                  Aucune note saisie.
-                </p>
+                <p class="empty-state">Aucune note saisie.</p>
               {% endif %}
 
               <div style="margin-top: 1.4rem;">
-
                 {% if inscription.statut == 'verrouillee' %}
-                  <a
-                    class="btn btn-primary"
-                    href="{% url 'manage_notes' choix.id %}"
-                  >
-                    Saisir / modifier les notes
-                  </a>
-
+                  <a class="btn btn-primary" href="{% url 'manage_notes' choix.id %}">Saisir / modifier les notes</a>
                 {% else %}
-                  <span class="btn btn-disabled">
-                    Inscription non verrouillée
-                  </span>
+                  <span class="btn btn-disabled">Inscription non verrouillée</span>
                 {% endif %}
-
               </div>
-
             </article>
-
           {% endwith %}
         {% endfor %}
-
       </div>
-
     {% else %}
-      <p class="empty-state">
-        Aucun module choisi.
-      </p>
+      <p class="empty-state">Aucun module choisi.</p>
     {% endif %}
   </section>
 {% endblock %}
