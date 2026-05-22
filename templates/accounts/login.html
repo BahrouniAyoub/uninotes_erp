@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Connexion</h1>
+<section class="auth-wrap">
+    <div class="card auth-card">
+        <p class="eyebrow">Espace étudiant</p>
+        <h1>Connexion</h1>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Se connecter</button>
-</form>
+        <form method="post" class="form-card">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary btn-full" type="submit">Se connecter</button>
+        </form>
 
-<p>Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
+        <p class="auth-switch">Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
+    </div>
+</section>
 {% endblock %}
