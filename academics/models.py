@@ -1,7 +1,7 @@
 from django.db import models
 from decimal import Decimal
 from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 # Create your models here.
 class CatalogueModule(models.Model):
     intitule = models.CharField(max_length=150, unique=True)
@@ -21,6 +21,23 @@ class CategorieEvaluation(models.Model):
    nom = models.CharField(max_length=100)
    poids = models.PositiveBigIntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
    
+   def clean(self):
+    categories = CategorieEvaluation.objects.filter(module=self.module)
+
+    if self.pk:
+        categories = categories.exclude(pk=self.pk)
+
+    total = sum(category.poids for category in categories) + self.poids
+
+    if total > 100:
+        raise ValidationError(
+            "La somme des poids des catégories d’un module ne peut pas dépasser 100%."
+        )
+        
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+   
    class Meta:
        unique_together = ["module", "nom"]
        ordering = ["module__intitule", "nom"]
@@ -37,11 +54,11 @@ class Inscription(models.Model):
     etudiant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="inscriptions")
     annee_academique = models.CharField(max_length=20, default="2025-2026")
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default="ouverte")
-    data_creation = models.DateTimeField(auto_now_add=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         unique_together = ["etudiant", "annee_academique"]
-        ordering = ["-data_creation"]
+        ordering = ["-date_creation"]
         
     def __str__(self):
         return f"{self.etudiant.username} - {self.annee_academique} - {self.statut}"
