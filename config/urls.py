@@ -20,6 +20,9 @@ from dashboard.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
     path('accounts/', include('accounts.urls')),
+    path("academics/", include("academics.urls")),
+
     path('', home, name='home'),
 ]
