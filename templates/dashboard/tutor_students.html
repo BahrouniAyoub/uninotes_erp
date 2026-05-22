@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <p class="eyebrow">Espace tuteur</p>
+    <h1>Mes étudiants</h1>
+    <p>Consultez les dashboards des étudiants que vous parrainez.</p>
+</div>
+
+<section class="section-card card">
+    {% if students %}
+        <div class="module-list">
+            {% for student in students %}
+                <article class="card feature-card">
+                    <h3>{{ student.username }}</h3>
+                    <p>{{ student.email }}</p>
+
+                    <a class="btn btn-primary" href="{% url 'tutor_student_dashboard' student.id %}">
+                        Voir dashboard
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">Aucun étudiant assigné.</p>
+    {% endif %}
+</section>
+{% endblock %}
