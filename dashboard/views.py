@@ -6,6 +6,8 @@ from accounts.models import Profile
 from academics.models import Inscription
 
 
+def home(request):
+    return render(request, "core/home.html")
 @login_required
 def student_dashboard_view(request):
     if request.user.profile.role != Profile.ROLE_STUDENT:

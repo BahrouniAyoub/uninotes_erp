@@ -496,6 +496,16 @@ textarea {
   display: inline;
 }
 
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.module-list .feature-card {
+  width: 100%;
+}
+
 @media (max-width: 900px) {
   .card-grid,
   .stats-grid {
