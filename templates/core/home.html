@@ -1,6 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Bienvenue sur UniNotes ERP</h1>
-<p>Application de suivi académique étudiant.</p>
+<section class="hero">
+  <div class="hero-content">
+    <p class="eyebrow">Gestion académique simple</p>
+    <h1>Bienvenue sur UniNotes ERP</h1>
+    <p>
+      Organisez vos modules, suivez votre panier d'inscription et gardez une vision claire de votre progression académique.
+    </p>
+    <a class="btn btn-primary" href="{% url 'basket' %}">Accéder au panier</a>
+  </div>
+</section>
+
+<section class="card-grid feature-grid">
+  <article class="card feature-card">
+    <span class="feature-icon">01</span>
+    <h2>Catalogue modules</h2>
+    <p>Parcourez les modules disponibles avec leurs coefficients, descriptions et catégories d'évaluation.</p>
+  </article>
+
+  <article class="card feature-card">
+    <span class="feature-icon">60</span>
+    <h2>Règle des 60 points</h2>
+    <p>Construisez une sélection équilibrée et surveillez instantanément les points restants.</p>
+  </article>
+
+  <article class="card feature-card">
+    <span class="feature-icon">DB</span>
+    <h2>Dashboard</h2>
+    <p>Retrouvez les informations essentielles de votre inscription dans une interface lisible.</p>
+  </article>
+
+  <article class="card feature-card">
+    <span class="feature-icon">EV</span>
+    <h2>Evolution chart</h2>
+    <p>Préparez le suivi visuel de vos résultats et de votre évolution au fil du semestre.</p>
+  </article>
+</section>
 {% endblock %}
