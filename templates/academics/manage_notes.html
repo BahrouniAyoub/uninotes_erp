@@ -3,8 +3,9 @@
 {% block content %}
   <div class="page-header">
     <p class="eyebrow">Gestion des notes</p>
-    <h1>{{ module_choisi.module.intitule }}</h1>
-    <p>Saisissez ou modifiez vos notes pour chaque catégorie d’évaluation.</p>
+    <h1>Saisie des notes</h1>
+    <p>Vous modifiez les notes de l'étudiant: {{ module_choisi.inscription.etudiant.username }}</p>
+    <p>Module: {{ module_choisi.module.intitule }}</p>
   </div>
 
   <section class="section-card card">
@@ -47,7 +48,7 @@
       <div style="margin-top: 1.5rem;">
         <button type="submit" class="btn btn-primary">Enregistrer les notes</button>
 
-        <a href="{% url 'student_dashboard' %}" class="btn btn-light">Retour au dashboard</a>
+        <a href="{% url 'tutor_student_dashboard' module_choisi.inscription.etudiant.id %}" class="btn btn-light">Retour au dashboard</a>
       </div>
     </form>
   </section>

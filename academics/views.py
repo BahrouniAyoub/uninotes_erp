@@ -1,12 +1,11 @@
-from django.shortcuts import render
+from decimal import Decimal, InvalidOperation
 
 # Create your views here.
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
-from .forms import NoteForm
-from .models import CategorieEvaluation, Note
+from .models import Note
 
 from accounts.models import Profile
 from .models import CatalogueModule, Inscription, ModuleChoisi
@@ -131,40 +130,56 @@ def remove_module_view(request, module_choisi_id):
 
 @login_required
 def manage_notes_view(request, module_choisi_id):
-    if request.user.profile.role != Profile.ROLE_STUDENT:
-        messages.error(request, "Accès réservé aux étudiants.")
+    if request.user.profile.role != Profile.ROLE_TUTOR:
+        messages.error(request, "Accès réservé aux tuteurs.")
         return redirect("home")
 
     module_choisi = get_object_or_404(
         ModuleChoisi,
         id=module_choisi_id,
-        inscription__etudiant=request.user
+        inscription__etudiant__in=request.user.profile.students.all()
     )
 
     inscription = module_choisi.inscription
+    student = inscription.etudiant
 
     if inscription.statut != Inscription.STATUT_VERROUILLEE:
         messages.error(
             request,
             "Les notes ne peuvent être saisies qu’après verrouillage de l’inscription."
         )
-        return redirect("student_dashboard")
+        return redirect("tutor_student_dashboard", student_id=student.id)
 
     categories = module_choisi.module.categories.all()
 
     if request.method == "POST":
+        submitted_notes = []
+
         for categorie in categories:
             valeur = request.POST.get(f"categorie_{categorie.id}")
 
             if valeur:
-                Note.objects.update_or_create(
-                    module_choisi=module_choisi,
-                    categorie=categorie,
-                    defaults={"valeur": valeur}
-                )
+                try:
+                    note_value = Decimal(valeur)
+                except InvalidOperation:
+                    messages.error(request, "Chaque note doit être une valeur numérique.")
+                    return redirect("manage_notes", module_choisi_id=module_choisi.id)
+
+                if note_value < Decimal("0") or note_value > Decimal("20"):
+                    messages.error(request, "Chaque note doit être comprise entre 0 et 20.")
+                    return redirect("manage_notes", module_choisi_id=module_choisi.id)
+
+                submitted_notes.append((categorie, note_value))
+
+        for categorie, note_value in submitted_notes:
+            Note.objects.update_or_create(
+                module_choisi=module_choisi,
+                categorie=categorie,
+                defaults={"valeur": note_value}
+            )
 
         messages.success(request, "Notes enregistrées avec succès.")
-        return redirect("student_dashboard")
+        return redirect("tutor_student_dashboard", student_id=student.id)
 
     existing_notes = {
         note.categorie_id: note

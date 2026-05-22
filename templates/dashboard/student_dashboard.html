@@ -2,19 +2,19 @@
 
 {% block content %}
   <div class="page-header">
-    <p class="eyebrow">{% if is_read_only %}Lecture seule{% else %}Espace étudiant{% endif %}</p>
+    <p class="eyebrow">{% if can_edit_notes %}Espace tuteur{% else %}Espace étudiant{% endif %}</p>
     <h1>
-      {% if is_read_only %}
+      {% if can_edit_notes %}
         Dashboard de {{ dashboard_user.username }}
       {% else %}
         Dashboard étudiant
       {% endif %}
     </h1>
     <p>
-      {% if is_read_only %}
-        Vue tuteur en lecture seule des modules, notes et moyennes de {{ dashboard_user.username }}.
+      {% if can_edit_notes %}
+        Gérez les notes de {{ dashboard_user.username }} et consultez ses moyennes.
       {% else %}
-        Consultez vos modules choisis, vos catégories d’évaluation, vos notes et vos moyennes.
+        Consultez vos modules choisis, vos catégories d’évaluation, vos notes, vos moyennes et votre évolution.
       {% endif %}
     </p>
   </div>
@@ -56,7 +56,7 @@
 
     {% if inscription.statut != 'verrouillee' %}
       <div class="locked-message">
-        {% if is_read_only %}
+        {% if can_edit_notes %}
           L’inscription de {{ dashboard_user.username }} n’est pas encore verrouillée.
         {% else %}
           Votre inscription n’est pas encore verrouillée.<div style="margin-top: 1rem;">
@@ -71,7 +71,7 @@
     <div class="section-title">
       <h2>Mes modules</h2>
 
-      {% if is_read_only %}
+      {% if can_edit_notes %}
         <a class="btn btn-light" href="{% url 'tutor_students' %}">Retour</a>
       {% else %}
         <a class="btn btn-primary" href="{% url 'basket' %}">Voir le panier</a>
@@ -134,12 +134,12 @@
               {% endif %}
 
               <div style="margin-top: 1.4rem;">
-                {% if is_read_only %}
-                  <span class="btn btn-disabled">Lecture seule</span>
-                {% elif inscription.statut == 'verrouillee' %}
+                {% if can_edit_notes and inscription.statut == 'verrouillee' %}
                   <a class="btn btn-primary" href="{% url 'manage_notes' choix.id %}">Saisir / modifier les notes</a>
-                {% else %}
+                {% elif can_edit_notes %}
                   <span class="btn btn-disabled">Inscription non verrouillée</span>
+                {% else %}
+                  <span class="btn btn-disabled">Lecture seule</span>
                 {% endif %}
               </div>
             </article>

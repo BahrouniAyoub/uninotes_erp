@@ -46,7 +46,8 @@ def student_dashboard_view(request):
         "inscription": inscription,
         "modules_data": module_data,
         "general_average": general_average,
-        "is_read_only": False,
+        "is_read_only": True,
+        "can_edit_notes": False,
         "dashboard_user": request.user,
     })
     
@@ -125,5 +126,6 @@ def tutor_student_dashboard_view(request, student_id):
         "modules_data": modules_data,
         "general_average": general_average,
         "is_read_only": True,
+        "can_edit_notes": True,
         "dashboard_user": student,
     })
