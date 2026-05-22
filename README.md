@@ -26,7 +26,7 @@ Mini projet Django — Framework Python pour le Web
 ## Installation
 
 ```bash
-git clone <repo>
+git clone https://github.com/BahrouniAyoub/uninotes_erp.git
 cd uninotes_erp
 python -m venv venv
 venv\Scripts\activate
