@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="page-header">
+    <p class="eyebrow">Gestion des notes</p>
+    <h1>{{ module_choisi.module.intitule }}</h1>
+    <p>Saisissez ou modifiez vos notes pour chaque catégorie d’évaluation.</p>
+  </div>
+
+  <section class="section-card card">
+    <form method="post" class="form-card">
+      {% csrf_token %}
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Catégorie</th>
+              <th>Poids</th>
+              <th>Note /20</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for categorie in categories %}
+              <tr>
+                <td>{{ categorie.nom }}</td>
+
+                <td>{{ categorie.poids }}%</td>
+
+                <td>
+                  <input type="number"
+                    name="categorie_{{ categorie.id }}"
+                    min="0"
+                    max="20"
+                    step="0.01"
+                    value="{% for note in module_choisi.notes.all %}
+                      {% if note.categorie.id == categorie.id %}{{ note.valeur }}{% endif %}
+                    {% endfor %}" />
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary">Enregistrer les notes</button>
+
+        <a href="{% url 'student_dashboard' %}" class="btn btn-light">Retour au dashboard</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
