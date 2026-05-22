@@ -2,9 +2,21 @@
 
 {% block content %}
   <div class="page-header">
-    <p class="eyebrow">Espace étudiant</p>
-    <h1>Dashboard étudiant</h1>
-    <p>Consultez vos modules choisis, vos catégories d’évaluation, vos notes et vos moyennes.</p>
+    <p class="eyebrow">{% if is_read_only %}Lecture seule{% else %}Espace étudiant{% endif %}</p>
+    <h1>
+      {% if is_read_only %}
+        Dashboard de {{ dashboard_user.username }}
+      {% else %}
+        Dashboard étudiant
+      {% endif %}
+    </h1>
+    <p>
+      {% if is_read_only %}
+        Vue tuteur en lecture seule des modules, notes et moyennes de {{ dashboard_user.username }}.
+      {% else %}
+        Consultez vos modules choisis, vos catégories d’évaluation, vos notes et vos moyennes.
+      {% endif %}
+    </p>
   </div>
 
   <section class="basket-status card">
@@ -44,9 +56,13 @@
 
     {% if inscription.statut != 'verrouillee' %}
       <div class="locked-message">
-        Votre inscription n’est pas encore verrouillée.<div style="margin-top: 1rem;">
-          <a class="btn btn-primary" href="{% url 'basket' %}">Retour au panier</a>
-        </div>
+        {% if is_read_only %}
+          L’inscription de {{ dashboard_user.username }} n’est pas encore verrouillée.
+        {% else %}
+          Votre inscription n’est pas encore verrouillée.<div style="margin-top: 1rem;">
+            <a class="btn btn-primary" href="{% url 'basket' %}">Retour au panier</a>
+          </div>
+        {% endif %}
       </div>
     {% endif %}
   </section>
@@ -55,8 +71,12 @@
     <div class="section-title">
       <h2>Mes modules</h2>
 
-      <a class="btn btn-primary" href="{% url 'basket' %}">Voir le panier</a>
-      <a class="btn btn-light" href="{% url 'evolution' %}">Voir l’évolution</a>
+      {% if is_read_only %}
+        <a class="btn btn-light" href="{% url 'tutor_students' %}">Retour</a>
+      {% else %}
+        <a class="btn btn-primary" href="{% url 'basket' %}">Voir le panier</a>
+        <a class="btn btn-light" href="{% url 'evolution' %}">Voir l’évolution</a>
+      {% endif %}
     </div>
 
     {% if modules_data %}
@@ -114,7 +134,9 @@
               {% endif %}
 
               <div style="margin-top: 1.4rem;">
-                {% if inscription.statut == 'verrouillee' %}
+                {% if is_read_only %}
+                  <span class="btn btn-disabled">Lecture seule</span>
+                {% elif inscription.statut == 'verrouillee' %}
                   <a class="btn btn-primary" href="{% url 'manage_notes' choix.id %}">Saisir / modifier les notes</a>
                 {% else %}
                   <span class="btn btn-disabled">Inscription non verrouillée</span>

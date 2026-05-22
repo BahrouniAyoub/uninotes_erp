@@ -46,6 +46,8 @@ def student_dashboard_view(request):
         "inscription": inscription,
         "modules_data": module_data,
         "general_average": general_average,
+        "is_read_only": False,
+        "dashboard_user": request.user,
     })
     
     
@@ -118,9 +120,10 @@ def tutor_student_dashboard_view(request, student_id):
 
     general_average = get_general_average(inscription)
 
-    return render(request, "dashboard/tutor_student_dashboard.html", {
-        "student": student,
+    return render(request, "dashboard/student_dashboard.html", {
         "inscription": inscription,
         "modules_data": modules_data,
         "general_average": general_average,
+        "is_read_only": True,
+        "dashboard_user": student,
     })
