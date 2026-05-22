@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.db.models import DecimalField, ExpressionWrapper, F, Sum
+from collections import OrderedDict
 
 
 def get_module_average(module_choisi):
@@ -34,3 +35,25 @@ def get_general_average(inscription):
             total += module_average * module_choisi.module.coefficient
 
     return round(total / Decimal("60.0"), 2)
+
+
+def get_evolution_data(inscription):
+    notes = (
+        inscription.modules_choisis
+        .prefetch_related("notes")
+    )
+
+    evolution = OrderedDict()
+
+    for module_choisi in notes:
+        for note in module_choisi.notes.all().order_by("date_saisie"):
+            date_label = note.date_saisie.strftime("%d/%m/%Y %H:%M")
+
+            current_average = get_general_average(inscription)
+
+            evolution[date_label] = float(current_average)
+
+    return {
+        "labels": list(evolution.keys()),
+        "values": list(evolution.values()),
+    }
