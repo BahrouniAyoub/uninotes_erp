@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 
 from accounts.models import Profile
 from academics.models import Inscription
-
+from academics.services import get_general_average, get_module_average
 
 def home(request):
     return render(request, "core/home.html")
@@ -27,8 +27,19 @@ def student_dashboard_view(request):
         return redirect("basket")
 
     modules_choisis = inscription.modules_choisis.all()
+    
+    module_data = []
+
+    for module_choisi in modules_choisis:
+        module_data.append({
+            "choix": module_choisi,
+            "average": get_module_average(module_choisi),
+        })
+
+    general_average = get_general_average(inscription)
 
     return render(request, "dashboard/student_dashboard.html", {
         "inscription": inscription,
-        "modules_choisis": modules_choisis,
+        "modules_data": module_data,
+        "general_average": general_average,
     })
