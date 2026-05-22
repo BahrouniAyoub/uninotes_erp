@@ -1,97 +1,174 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="page-header">
+  <div class="page-header">
     <p class="eyebrow">Espace étudiant</p>
     <h1>Dashboard étudiant</h1>
-    <p>Consultez vos modules choisis, vos catégories d’évaluation et vos notes.</p>
-</div>
+    <p>
+      Consultez vos modules choisis, vos catégories d’évaluation,
+      vos notes et vos moyennes.
+    </p>
+  </div>
 
-<section class="basket-status card">
+  <section class="basket-status card">
     <div class="section-title">
-        <h2>Résumé de l’inscription</h2>
-        <span class="status-badge">{{ inscription.get_statut_display }}</span>
+      <h2>Résumé de l’inscription</h2>
+      <span class="status-badge">
+        {{ inscription.get_statut_display }}
+      </span>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card">
-            <span>Année académique</span>
-            <strong>{{ inscription.annee_academique }}</strong>
-        </div>
+      <div class="stat-card">
+        <span>Année académique</span>
+        <strong>{{ inscription.annee_academique }}</strong>
+      </div>
 
-        <div class="stat-card">
-            <span>Nombre de modules</span>
-            <strong>{{ modules_choisis|length }}</strong>
-        </div>
+      <div class="stat-card">
+        <span>Nombre de modules</span>
+        <strong>{{ modules_data|length }}</strong>
+      </div>
 
-        <div class="stat-card">
-            <span>Statut</span>
-            <strong>{{ inscription.get_statut_display }}</strong>
-        </div>
+      <div class="stat-card">
+        <span>Statut</span>
+        <strong>{{ inscription.get_statut_display }}</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Moyenne générale</span>
+
+        <strong>
+          {% if general_average %}
+            {{ general_average }}/20
+          {% else %}
+            —
+          {% endif %}
+        </strong>
+      </div>
     </div>
 
-    {% if inscription.statut != "verrouillee" %}
-        <div class="locked-message">
-            Votre inscription n’est pas encore verrouillée.
-            <a href="{% url 'basket' %}">Retour au panier</a>
-        </div>
-    {% endif %}
-</section>
+    {% if inscription.statut != 'verrouillee' %}
+      <div class="locked-message">
+        Votre inscription n’est pas encore verrouillée.
 
-<section class="section-card card">
+        <div style="margin-top: 1rem;">
+          <a class="btn btn-primary" href="{% url 'basket' %}">
+            Retour au panier
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="section-card card">
     <div class="section-title">
-        <h2>Mes modules</h2>
-        <a class="btn btn-primary" href="{% url 'basket' %}">Voir le panier</a>
+      <h2>Mes modules</h2>
+
+      <a class="btn btn-primary" href="{% url 'basket' %}">
+        Voir le panier
+      </a>
     </div>
 
-    {% if modules_choisis %}
-        <div class="module-list">
-            {% for choix in modules_choisis %}
-                <article class="card feature-card">
-                    <span class="feature-icon">{{ choix.module.coefficient }}</span>
+    {% if modules_data %}
+      <div class="module-list">
 
-                    <h3>{{ choix.module.intitule }}</h3>
-                    <p>Coefficient : <strong>{{ choix.module.coefficient }}</strong></p>
+        {% for data in modules_data %}
+          {% with choix=data.choix %}
 
-                    <h4>Catégories</h4>
-                    <ul class="suggestion-list">
-                        {% for categorie in choix.module.categories.all %}
-                            <li>
-                                <span>{{ categorie.nom }}</span>
-                                <strong>{{ categorie.poids }}%</strong>
-                            </li>
-                        {% endfor %}
-                    </ul>
+            <article class="card feature-card">
 
-                    <h4 style="margin-top: 1rem;">Notes</h4>
+              <span class="feature-icon">
+                {{ choix.module.coefficient }}
+              </span>
 
-                    {% if choix.notes.all %}
-                        <ul class="suggestion-list">
-                            {% for note in choix.notes.all %}
-                                <li>
-                                    <span>{{ note.categorie.nom }}</span>
-                                    <strong>{{ note.valeur }}/20</strong>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="empty-state">Aucune note saisie.</p>
-                    {% endif %}
+              <h3>{{ choix.module.intitule }}</h3>
 
-                    {% if inscription.statut == "verrouillee" %}
-                        <div style="margin-top: 1rem;" href="{% url 'manage_notes' choix.id %}">
-                            <a class="btn btn-primary" href="#">Saisir / modifier les notes</a>
-                        </div>
-                    {% else %}
-                        <div style="margin-top: 1rem;">
-                            <span class="btn btn-disabled">Inscription non verrouillée</span>
-                        </div>
-                    {% endif %}
-                </article>
-            {% endfor %}
-        </div>
+              <p>
+                Coefficient :
+                <strong>{{ choix.module.coefficient }}</strong>
+              </p>
+
+              <p>
+                Moyenne du module :
+
+                <strong>
+                  {% if data.average %}
+                    {{ data.average }}/20
+                  {% else %}
+                    En attente de notes
+                  {% endif %}
+                </strong>
+              </p>
+
+              <h4>Catégories d’évaluation</h4>
+
+              <ul class="suggestion-list">
+                {% for categorie in choix.module.categories.all %}
+                  <li>
+                    <span>{{ categorie.nom }}</span>
+
+                    <strong>
+                      {{ categorie.poids }}%
+                    </strong>
+                  </li>
+                {% endfor %}
+              </ul>
+
+              <h4 style="margin-top: 1.2rem;">
+                Notes enregistrées
+              </h4>
+
+              {% if choix.notes.all %}
+                <ul class="suggestion-list">
+
+                  {% for note in choix.notes.all %}
+                    <li>
+                      <span>
+                        {{ note.categorie.nom }}
+                      </span>
+
+                      <strong>
+                        {{ note.valeur }}/20
+                      </strong>
+                    </li>
+                  {% endfor %}
+
+                </ul>
+              {% else %}
+                <p class="empty-state">
+                  Aucune note saisie.
+                </p>
+              {% endif %}
+
+              <div style="margin-top: 1.4rem;">
+
+                {% if inscription.statut == 'verrouillee' %}
+                  <a
+                    class="btn btn-primary"
+                    href="{% url 'manage_notes' choix.id %}"
+                  >
+                    Saisir / modifier les notes
+                  </a>
+
+                {% else %}
+                  <span class="btn btn-disabled">
+                    Inscription non verrouillée
+                  </span>
+                {% endif %}
+
+              </div>
+
+            </article>
+
+          {% endwith %}
+        {% endfor %}
+
+      </div>
+
     {% else %}
-        <p class="empty-state">Aucun module choisi.</p>
+      <p class="empty-state">
+        Aucun module choisi.
+      </p>
     {% endif %}
-</section>
+  </section>
 {% endblock %}
