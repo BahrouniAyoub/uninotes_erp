@@ -79,7 +79,7 @@
                     {% endif %}
 
                     {% if inscription.statut == "verrouillee" %}
-                        <div style="margin-top: 1rem;">
+                        <div style="margin-top: 1rem;" href="{% url 'manage_notes' choix.id %}">
                             <a class="btn btn-primary" href="#">Saisir / modifier les notes</a>
                         </div>
                     {% else %}
