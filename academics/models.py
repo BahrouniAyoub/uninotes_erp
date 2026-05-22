@@ -46,14 +46,17 @@ class CategorieEvaluation(models.Model):
         return f"{self.module.intitule} - {self.nom} ({self.poids}%)"
     
 class Inscription(models.Model):
+    STATUT_OUVERTE = "ouverte"
+    STATUT_VERROUILLEE = "verrouillee"
+
     STATUT_CHOICES = [
-        ("ouverte", "Ouverte"),
-        ("verrouillee", "Verrouillée"),
+        (STATUT_OUVERTE, "Ouverte"),
+        (STATUT_VERROUILLEE, "Verrouillée"),
     ]
     
     etudiant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="inscriptions")
     annee_academique = models.CharField(max_length=20, default="2025-2026")
-    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default="ouverte")
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default=STATUT_OUVERTE)
     date_creation = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -66,7 +69,7 @@ class Inscription(models.Model):
     
 class ModuleChoisi(models.Model):
     inscription = models.ForeignKey(Inscription, on_delete=models.CASCADE, related_name="modules_choisis")
-    module = models.ForeignKey(CatalogueModule, on_delete=models.CASCADE, related_name="choix")
+    module = models.ForeignKey(CatalogueModule, on_delete=models.PROTECT, related_name="choix")
     date_choix = models.DateTimeField(auto_now_add=True)
     
     class Meta:
