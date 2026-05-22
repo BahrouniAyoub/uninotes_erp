@@ -38,10 +38,10 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         user = self.request.user
 
-        if hasattr(user, "profile") and user.profile.role == Profile.ROLE_TUTOR:
-            return "/tutor/students/"
+        if hasattr(user, "profile") and user.profile.role == Profile.ROLE_STUDENT:
+            return "/academics/basket/"
 
-        return "/academics/basket/"
+        return "/"
 
 
 class CustomLogoutView(LogoutView):
