@@ -1,17 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>UniNotes ERP</title>
-</head>
-<body>
+  </head>
+  <body>
     <nav>
-        <a href="/">UniNotes ERP</a>
+      <a href="{% url 'home' %}">UniNotes ERP</a>
+
+      {% if user.is_authenticated %}
+        <span>Connecté: {{ user.username }}</span>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit">Déconnexion</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Connexion</a>
+        <a href="{% url 'register' %}">Inscription</a>
+      {% endif %}
     </nav>
 
     <main>
-        {% block content %}
-        {% endblock %}
+      {% block content %}
+
+      {% endblock %}
     </main>
-</body>
+  </body>
 </html>
