@@ -14,6 +14,16 @@
 
         <div class="nav-actions">
           {% if user.is_authenticated %}
+            {% if user.profile.role == 'student' %}
+              <a class="nav-link" href="{% url 'basket' %}">Panier</a>
+
+              <a class="nav-link" href="{% url 'student_dashboard' %}">Dashboard</a>
+
+              <a class="nav-link" href="{% url 'evolution' %}">Évolution</a>
+            {% elif user.profile.role == 'tutor' %}
+              <a class="nav-link" href="{% url 'tutor_students' %}">Étudiants</a>
+            {% endif %}
+            
             <span class="user-pill">{{ user.username }}</span>
             <form method="post" action="{% url 'logout' %}" class="inline-form">
               {% csrf_token %}
