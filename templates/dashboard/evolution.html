@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <p class="eyebrow">Analyse académique</p>
+
+    <h1>Évolution de la moyenne générale</h1>
+
+    <p>
+        Visualisez l’évolution de votre moyenne générale
+        selon les notes enregistrées.
+    </p>
+</div>
+
+<section class="section-card card">
+
+    <div class="section-title">
+        <h2>Courbe d’évolution</h2>
+
+        <a class="btn btn-light" href="{% url 'student_dashboard' %}">
+            Retour au dashboard
+        </a>
+    </div>
+
+    <canvas id="evolutionChart"></canvas>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('evolutionChart');
+
+    new Chart(ctx, {
+        type: 'line',
+
+        data: {
+            labels: {{ labels|safe }},
+
+            datasets: [{
+                label: 'Moyenne générale',
+
+                data: {{ values|safe }},
+
+                borderWidth: 3,
+                tension: 0.3,
+                fill: false
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            scales: {
+                y: {
+                    min: 0,
+                    max: 20
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
