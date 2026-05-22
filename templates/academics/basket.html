@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Panier d'inscription</h1>
+
+{% if messages %}
+    {% for message in messages %}
+        <p><strong>{{ message }}</strong></p>
+    {% endfor %}
+{% endif %}
+
+<section>
+    <h2>État du panier</h2>
+    <p>Total actuel : <strong>{{ total }}</strong> / 60</p>
+    <p>Points restants : <strong>{{ remaining }}</strong></p>
+    <p>Statut : <strong>{{ inscription.get_statut_display }}</strong></p>
+
+    {% if inscription.statut == "verrouillee" %}
+        <p>
+            Votre inscription est verrouillée. Vous ne pouvez plus modifier votre sélection de modules.
+        </p>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h2>Modules choisis</h2>
+
+    {% if modules_choisis %}
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>Module</th>
+                <th>Coefficient</th>
+                <th>Action</th>
+            </tr>
+
+            {% for choix in modules_choisis %}
+                <tr>
+                    <td>{{ choix.module.intitule }}</td>
+                    <td>{{ choix.module.coefficient }}</td>
+                    <td>
+                        {% if inscription.statut == "ouverte" %}
+                            <form method="post" action="{% url 'remove_module' choix.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Retirer</button>
+                            </form>
+                        {% else %}
+                            Verrouillé
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Aucun module choisi.</p>
+    {% endif %}
+</section>
+
+<hr>
+
+{% if inscription.statut == "ouverte" %}
+<section>
+    <h2>Suggestions</h2>
+
+    {% if suggestions %}
+        <ul>
+            {% for module in suggestions %}
+                <li>{{ module.intitule }} — coefficient {{ module.coefficient }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune suggestion disponible pour les points restants.</p>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h2>Catalogue des modules</h2>
+
+    {% if catalogue %}
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>Module</th>
+                <th>Coefficient</th>
+                <th>Description</th>
+                <th>Catégories</th>
+                <th>Action</th>
+            </tr>
+
+            {% for module in catalogue %}
+                <tr>
+                    <td>{{ module.intitule }}</td>
+                    <td>{{ module.coefficient }}</td>
+                    <td>{{ module.description }}</td>
+                    <td>
+                        {% for categorie in module.categories.all %}
+                            {{ categorie.nom }}: {{ categorie.poids }}%<br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'add_module' module.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Ajouter</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Aucun module disponible.</p>
+    {% endif %}
+</section>
+{% endif %}
+{% endblock %}
