@@ -1,142 +1,144 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="page-header">
+  <div class="page-header">
     <p class="eyebrow">Inscription académique</p>
     <h1>Panier d'inscription</h1>
     <p>Composez votre sélection de modules en respectant la limite de 60 points.</p>
-</div>
+  </div>
 
-<section class="card basket-status">
+  <section class="card basket-status">
     <div class="section-title">
-        <h2>État du panier</h2>
-        <span class="status-badge">{{ inscription.get_statut_display }}</span>
+      <h2>État du panier</h2>
+      <span class="status-badge">{{ inscription.get_statut_display }}</span>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card">
-            <span>Total actuel</span>
-            <strong>{{ total }} / 60</strong>
-        </div>
-        <div class="stat-card">
-            <span>Points restants</span>
-            <strong>{{ remaining }}</strong>
-        </div>
-        <div class="stat-card">
-            <span>Statut</span>
-            <strong>{{ inscription.get_statut_display }}</strong>
-        </div>
+      <div class="stat-card">
+        <span>Total actuel</span>
+        <strong>{{ total }} / 60</strong>
+      </div>
+      <div class="stat-card">
+        <span>Points restants</span>
+        <strong>{{ remaining }}</strong>
+      </div>
+      <div class="stat-card">
+        <span>Statut</span>
+        <strong>{{ inscription.get_statut_display }}</strong>
+      </div>
     </div>
 
-    {% if inscription.statut == "verrouillee" %}
-        <p class="locked-message">
-            Votre inscription est verrouillée. Vous ne pouvez plus modifier votre sélection de modules.
-        </p>
-    {% endif %}
-</section>
+    {% if inscription.statut == 'verrouillee' %}
+      <div class="locked-message">
+        <p>Votre inscription est verrouillée. Vous ne pouvez plus modifier votre sélection de modules.</p>
 
-<section class="card section-card">
+        <a class="btn btn-primary" href="{% url 'student_dashboard' %}">Accéder au dashboard</a>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="card section-card">
     <div class="section-title">
-        <h2>Modules choisis</h2>
+      <h2>Modules choisis</h2>
     </div>
 
     {% if modules_choisis %}
-        <div class="table-wrap">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Module</th>
-                        <th>Coefficient</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for choix in modules_choisis %}
-                <tr>
-                    <td>{{ choix.module.intitule }}</td>
-                    <td>{{ choix.module.coefficient }}</td>
-                    <td>
-                        {% if inscription.statut == "ouverte" %}
-                            <form method="post" action="{% url 'remove_module' choix.id %}" class="inline-form">
-                                {% csrf_token %}
-                                <button class="btn btn-danger" type="submit">Retirer</button>
-                            </form>
-                        {% else %}
-                            <span class="btn btn-disabled">Verrouillé</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p class="empty-state">Aucun module choisi.</p>
-    {% endif %}
-</section>
-
-{% if inscription.statut == "ouverte" %}
-<section class="card section-card">
-    <div class="section-title">
-        <h2>Suggestions</h2>
-    </div>
-
-    {% if suggestions %}
-        <ul class="suggestion-list">
-            {% for module in suggestions %}
-                <li>
-                    <span>{{ module.intitule }}</span>
-                    <strong>Coefficient {{ module.coefficient }}</strong>
-                </li>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Coefficient</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for choix in modules_choisis %}
+              <tr>
+                <td>{{ choix.module.intitule }}</td>
+                <td>{{ choix.module.coefficient }}</td>
+                <td>
+                  {% if inscription.statut == 'ouverte' %}
+                    <form method="post" action="{% url 'remove_module' choix.id %}" class="inline-form">
+                      {% csrf_token %}
+                      <button class="btn btn-danger" type="submit">Retirer</button>
+                    </form>
+                  {% else %}
+                    <span class="btn btn-disabled">Verrouillé</span>
+                  {% endif %}
+                </td>
+              </tr>
             {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty-state">Aucun module choisi.</p>
+    {% endif %}
+  </section>
+
+  {% if inscription.statut == 'ouverte' %}
+    <section class="card section-card">
+      <div class="section-title">
+        <h2>Suggestions</h2>
+      </div>
+
+      {% if suggestions %}
+        <ul class="suggestion-list">
+          {% for module in suggestions %}
+            <li>
+              <span>{{ module.intitule }}</span>
+              <strong>Coefficient {{ module.coefficient }}</strong>
+            </li>
+          {% endfor %}
         </ul>
-    {% else %}
+      {% else %}
         <p class="empty-state">Aucune suggestion disponible pour les points restants.</p>
-    {% endif %}
-</section>
+      {% endif %}
+    </section>
 
-<section class="card section-card">
-    <div class="section-title">
+    <section class="card section-card">
+      <div class="section-title">
         <h2>Catalogue des modules</h2>
-    </div>
+      </div>
 
-    {% if catalogue %}
+      {% if catalogue %}
         <div class="table-wrap">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Module</th>
-                        <th>Coefficient</th>
-                        <th>Description</th>
-                        <th>Catégories</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for module in catalogue %}
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Coefficient</th>
+                <th>Description</th>
+                <th>Catégories</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for module in catalogue %}
                 <tr>
-                    <td>{{ module.intitule }}</td>
-                    <td>{{ module.coefficient }}</td>
-                    <td>{{ module.description }}</td>
-                    <td>
-                        {% for categorie in module.categories.all %}
-                            {{ categorie.nom }}: {{ categorie.poids }}%<br>
-                        {% endfor %}
-                    </td>
-                    <td>
-                        <form method="post" action="{% url 'add_module' module.id %}" class="inline-form">
-                            {% csrf_token %}
-                            <button class="btn btn-primary" type="submit">Ajouter</button>
-                        </form>
-                    </td>
+                  <td>{{ module.intitule }}</td>
+                  <td>{{ module.coefficient }}</td>
+                  <td>{{ module.description }}</td>
+                  <td>
+                    {% for categorie in module.categories.all %}
+                      {{ categorie.nom }}: {{ categorie.poids }}%<br />
+                    {% endfor %}
+                  </td>
+                  <td>
+                    <form method="post" action="{% url 'add_module' module.id %}" class="inline-form">
+                      {% csrf_token %}
+                      <button class="btn btn-primary" type="submit">Ajouter</button>
+                    </form>
+                  </td>
                 </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-    {% else %}
+      {% else %}
         <p class="empty-state">Aucun module disponible.</p>
-    {% endif %}
-</section>
-{% endif %}
+      {% endif %}
+    </section>
+  {% endif %}
 {% endblock %}
