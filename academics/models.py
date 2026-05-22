@@ -84,7 +84,7 @@ class Note(models.Model):
     module_choisi = models.ForeignKey(ModuleChoisi, on_delete=models.CASCADE, related_name="notes")
     categorie = models.ForeignKey(CategorieEvaluation, on_delete=models.PROTECT, related_name="notes")
     valeur = models.DecimalField(max_digits=4, decimal_places=2, validators=[MinValueValidator(Decimal('0.00')), MaxValueValidator(Decimal('20.00'))])
-    date_saisie = models.DateTimeField(auto_now_add=True)
+    date_saisie = models.DateTimeField(auto_now=True)
     
     class Meta:
         unique_together = ["module_choisi", "categorie"]
