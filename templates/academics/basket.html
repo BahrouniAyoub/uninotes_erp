@@ -78,7 +78,7 @@
   </section>
 
   {% if inscription.statut == 'ouverte' %}
-    <section class="card section-card">
+    {% comment %} <section class="card section-card">
       <div class="section-title">
         <h2>Suggestions</h2>
       </div>
@@ -95,7 +95,7 @@
       {% else %}
         <p class="empty-state">Aucune suggestion disponible pour les points restants.</p>
       {% endif %}
-    </section>
+    </section> {% endcomment %}
 
     <section class="card section-card">
       <div class="section-title">
